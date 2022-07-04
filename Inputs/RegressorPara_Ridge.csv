@@ -1,0 +1,2 @@
+ModelClass,SpecificModel,Include,NHyperopt,full optimization
+sklearn-regressor,Ridge,TRUE,40,40

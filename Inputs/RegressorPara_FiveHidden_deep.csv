@@ -1,0 +1,2 @@
+ModelClass,SpecificModel,Include,NHyperopt,full optimization
+DNN_deep,FiveHidden,TRUE,10,10
