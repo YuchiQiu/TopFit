@@ -36,12 +36,12 @@ The above pacakges are required by modules including PST, TAPE, ESM, and ensembl
 
 ## Additional pacakges
 
-In additional to packages listed above, different modules may need a few extra software or packages listed below.
-### PST
+In additional to packages listed above, modules below need extra softwares or packages:
+### PST module
 PST module requires [VMD](https://www.ks.uiuc.edu/Research/vmd/) and [Jackal](http://honig.c2b2.columbia.edu/jackal) for structure data processing. Please install them and add the paths of their excutable files in `software_path()` function in `src/filepath_dir.py`.
-### TAPE
+### TAPE module
 Follow the instruction to install [TAPE](https://github.com/songlab-cal/tape),and download pretrain weights. tensorflow=1.13.0 also needs to be installed. Please revise the path of its pretrain parameters in `TAPE_MODEL_LOCATIONS` in `src/filepath_dir.py`, its default value is `tape-neurips2019/pretrained_models/`.
-### ESM 
+### ESM module
 Follow the instruction to install [ESM](https://github.com/facebookresearch/esm), and download pretrain weights for both esm1b and esm1v models. 
 
 ## Conda environments for two sequence-based modules
@@ -198,5 +198,5 @@ To download data for all datasets, run `./download_data.sh`
 [5] [Low-N protein engineering with data-efficient deep learning, Nature Methods, 2021](https://doi.org/10.1038/s41592-021-01100-y) (eUniRep model)\
 [6] [Evaluating Protein Transfer Learning with TAPE, Arxiv 2019](https://arxiv.org/abs/1906.08230) (TAPE model)\
 [7] [Biological structure and function emerge from scaling unsupervised learning to 250 million protein sequences, PNAS 2021](https://doi.org/10.1073/pnas.2016239118) (ESM1b Transformer)\
-[8] [Language models enable zero-shot prediction of the effects of mutations on protein function, BioRxiv, 2021](https://doi.org/10.1101/2021.07.09.450648) (ESM1v Transformer)\
+[8] [Language models enable zero-shot prediction of the effects of mutations on protein function, BioRxiv, 2021](https://doi.org/10.1101/2021.07.09.450648) (ESM1v Transformer)
 
