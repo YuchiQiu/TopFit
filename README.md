@@ -15,8 +15,6 @@ TopFit is a persistent spectral theory (PST)-based machine learning model that n
 - [Reference](#reference) 
 
 # Installment
-To install TopFit, run:
-`git clone --recurse-submodules https://github.com/YuchiQiu/TopFit.git`
 
 The major modules of TopFit are implemented in Python3.6.6 in virtualenv with pacakges:
 1. pytorch=1.10.0
