@@ -30,7 +30,7 @@ The major modules of TopFit are implemented in Python3.6.6 in virtualenv with pa
 12. tqdm=4.32.1
 13. [gudhi](https://gudhi.inria.fr)=3.3.0
 
-The above pacakges are required by modules including PST, TAPE, ESM, and ensemble regression. 
+The above pacakges are required by modules including PST, TAPE, ESM, and ensemble regression. The installation time is approaximately a few minutes.
 
 ## Additional pacakges
 
@@ -42,7 +42,7 @@ Follow the instruction to install [TAPE](https://github.com/songlab-cal/tape),an
 ### ESM module
 Follow the instruction to install [ESM](https://github.com/facebookresearch/esm), and download pretrain weights for both esm1b and esm1v models. 
 
-## Conda environments for two sequence-based modules
+## Conda environments for two special sequence-based modules
 The two modules below require different environment than above. Please create the conda environment below when using them. 
 
 1. [DeepSequence VAE](https://github.com/debbiemarkslab/DeepSequence) is implemented by python2.7. Built the conda environment for it: `conda env create -f deep_sequence.yml`. Also follow the instruction to install this repo, and write the repo path in variable `WORKING_DIR` in both `src/vae_train.py` and `src/vae_inference.py`. This package is implemented by THEANO, please set up the CUDA environment for it to accelerate the VAE model training.
@@ -140,7 +140,7 @@ In addition, evolutionary scores for the most of datasets can be obtained from D
 
 The ensemble regression integrates multiple regressors with optimized hyperparameters. The top performing models are selected and their predictions are averaged to get the ensemble. To run the regression, first prepare the list of models. An example with full list of available models can be found in `Inputs/RegressorPara.csv`. Model type `ANN_deep` has more hidden units at each layer than model type `ANN`. Demo using ridge regression is `Inputs/RegressorPara_Ridge.csv`. The implementation of ensembel regression was rewritten from the codes in [MLDE](https://github.com/fhalab/MLDE) package. 
 
-For example, run 
+For example, run a Demo (running within 5 mintues) as the following: 
 ```
 dataset=YAP1_HUMAN_Fields2012-singles-linear
 encoder=vae+PST+esm1b
