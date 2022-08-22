@@ -19,14 +19,14 @@ TopFit is a persistent spectral theory (PST)-based machine learning model that n
 The major modules of TopFit are implemented in Python3.6.6 in virtualenv with pacakges:
 1. pytorch=1.10.0
 2. [scikit-learn](https://scikit-learn.org/stable/)=0.23.1
-3. [xgboost](https://xgboost.readthedocs.io/en/stable/)
+3. [xgboost](https://xgboost.readthedocs.io/en/stable/)=1.5.0
 4. scipy=1.4.1
 6. biopython=1.79
 7. numpy=1.19.5
 8. h5py=2.10.0
 9. [hyperopt](http://hyperopt.github.io/hyperopt/)=0.2.2
 10. pandas=1.1.2
-11. pickle
+11. pickle=4.0
 12. tqdm=4.32.1
 13. [gudhi](https://gudhi.inria.fr)=3.3.0
 
