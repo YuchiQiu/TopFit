@@ -183,9 +183,10 @@ Users can create their own data to run. Please follow the steps to create necess
  - Use Jackal and VMD to optimize and revise the structure. Especially, when the `wt.fasta` and `$PDB.fasta` are not identical, the structure data needs to be mutated to match the wildtype sequence. Follow the manuscript description about the structure optimization. The precise processing functions are provided for each dataset: `structure_dataset/$dataset/get_PDB.py`. Please refer to our paper for the structure optimization details.
 4. Create alignment file stored in `alignments/$dataset/`. We use [EVcoupling](https://v2.evcouplings.org) server to generate `.a2m` MSA file. We search over `UniRef100` database. The `Bitscore` is adjusted to ensure at least 70% residues are covered. See the manuscript or the [DeepSequence paper](https://doi.org/10.1038/s41592-018-0138-4) for details of MSA creation. 
 5. The pretrain weights for fine-tune eUniRep models are stored in `unirep_weights/$uniprot/`. PST, PH and sequence-based embedding are all stored in `Features/$dataset/`. The evolutionary scores are 
-## Example data
+## Data
+### Demo dataset 
 Run `./download_data_demo.sh` to download input and output data for `YAP1_HUMAN` dataset. 
-
+### Source data
 All source data are available in this [link](https://weilab.math.msu.edu/Downloads/TopFit/). `Data.tar.gz` contains sequence data, structure data, evolutionary scores, and alignment files for all datasets. `Features.tar.gz` contains normalized embedding features for all datasets. `unirep_weights.tar.gz` contains pretrain and fine-tune weights for eUniRep model.
 
 # Reference
