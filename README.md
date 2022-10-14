@@ -38,7 +38,7 @@ In additional to packages listed above, modules below need extra softwares or pa
 ### PST module
 PST module requires [VMD](https://www.ks.uiuc.edu/Research/vmd/) and [Jackal](http://honig.c2b2.columbia.edu/jackal) for structure data processing. Please install them and add the paths of their excutable files in `software_path()` function in `src/filepath_dir.py`.
 ### TAPE module
-Follow the instruction to install [TAPE](https://github.com/songlab-cal/tape),and download pretrain weights. tensorflow=1.13.0 also needs to be installed. Please revise the path of its pretrain parameters in `TAPE_MODEL_LOCATIONS` in `src/filepath_dir.py`, its default value is `tape-neurips2019/pretrained_models/`.
+Follow the instruction to install [TAPE](https://github.com/songlab-cal/tape-neurips2019),and download pretrain weights. tensorflow=1.13.0 also needs to be installed. Please revise the path of its pretrain parameters in `TAPE_MODEL_LOCATIONS` in `src/filepath_dir.py`, its default value is `tape-neurips2019/pretrained_models/`.
 ### ESM module
 Follow the instruction to install [ESM](https://github.com/facebookresearch/esm), and download pretrain weights for both esm1b and esm1v models. 
 
