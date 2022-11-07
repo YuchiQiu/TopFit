@@ -1,4 +1,5 @@
 import gudhi, re, os, sys
+import gudhi.representations
 import numpy as np
 from  math  import sqrt
 radii = {'C':0.77,'N':0.70,'O':0.73,'S':1.03,'P':1.10,'F':0.72,'CL':0.99,'BR':1.14,'I':1.33,'H':0.37}
@@ -324,8 +325,160 @@ def alpha_shape(atoms_m, atoms_o):
         alpha_PH12_all[13] = np.max(bars[bars['dim']==2]['death'])
 
     return np.array(alpha_PH12), np.array(alpha_PH12_all)
+def alpha_shape_landscape(atoms_m, atoms_o,genotype,
+                          resolution=10,num_landscapes=3):
+    """""
+        1-d and 2-d PH features using alpha complex.
+        Landscape representation is used.
+        Euclidean distance is used by concatenate all atoms.
 
-def PH_mute(pro):
+        Parameters
+        ----------
+        atoms_m: list
+            each element stores a list of `atom` with the same element type (given in @ElementList)
+        atoms_o: list
+            each element stores a list of `atom` with the same element type (given in @ElementList)
+        Returns
+        """
+    # acX = gd.AlphaComplex(points=X).create_simplex_tree()
+    # dgmX = acX.persistence()
+    # LS = gd.representations.Landscape(resolution=1000)
+    # L = LS.fit_transform([acX.persistence_intervals_in_dimension(1)])
+    # import matplotlib.pyplot as plt
+
+    alpha_PH12=[]
+    for idx_m, e_m in enumerate(ElementList):
+        for idx_o, e_o in enumerate(ElementList):
+            points  = [iatom.pos for iatom in atoms_m[idx_m]]
+            points += [iatom.pos for iatom in atoms_o[idx_o]]
+            alpha_complex = gudhi.AlphaComplex(points=points)
+            acX = alpha_complex.create_simplex_tree()
+            dgmY=acX.persistence()
+            LS = gudhi.representations.Landscape(resolution=resolution,num_landscapes=num_landscapes)
+            L1 = LS.fit_transform([acX.persistence_intervals_in_dimension(1)])
+            alpha_PH12.extend(L1[0])
+            L2 = LS.fit_transform([acX.persistence_intervals_in_dimension(2)])
+            alpha_PH12.extend(L2[0])
+
+            # gudhi.plot_persistence_diagram(dgmY)
+            # plt.savefig('PD_' + genotype + '_'+e_m+e_o+'.pdf')
+            # plt.close()
+            # gudhi.plot_persistence_barcode(dgmY)
+            # plt.savefig('barcode_' + genotype + '_' + e_m + e_o + '.pdf')
+            # plt.close()
+            # for i in range(num_landscapes):
+            #     plt.plot(L1[0][resolution * (i - 1):resolution * i])
+            # plt.savefig('landscape_d=1' + genotype + '_'+e_m+e_o+ '.pdf')
+            # plt.close()
+            # for i in range(num_landscapes):
+            #     plt.plot(L2[0][resolution * (i - 1):resolution * i])
+            # plt.savefig('landscape_d=2' + genotype + '_'+e_m+e_o+ '.pdf')
+            # np.save('point_cloud_' + genotype + '_'+e_m+e_o+ '.npy', points)
+
+    alpha_PH12_all=[]
+    points = []
+    for idx in range(EleLength):
+        points += [iatom.pos for iatom in atoms_m[idx]]
+        points += [iatom.pos for iatom in atoms_o[idx]]
+    # np.save('point_cloud_'+genotype+'.npy',points)
+    alpha_complex = gudhi.AlphaComplex(points=points)
+    acX = alpha_complex.create_simplex_tree()#.persistence()
+    dgmY=acX.persistence()
+    LS = gudhi.representations.Landscape(resolution=resolution, num_landscapes=num_landscapes)
+    L1 = LS.fit_transform([acX.persistence_intervals_in_dimension(1)])
+
+    # gudhi.plot_persistence_diagram(dgmY)
+    # plt.savefig('PD_'+genotype+'.pdf')
+    # plt.close()
+    # gudhi.plot_persistence_barcode(dgmY)
+    # plt.savefig('barcode_' + genotype+'.pdf')
+    # plt.close()
+
+    alpha_PH12_all.extend(L1[0])
+    L2 = LS.fit_transform([acX.persistence_intervals_in_dimension(2)])
+    alpha_PH12_all.extend(L2[0])
+
+    # for i in range(num_landscapes):
+    #     plt.plot(L1[0][resolution*(i-1):resolution*i])
+    # plt.savefig('landscape_d=1'+genotype+'.pdf')
+    # plt.close()
+    # for i in range(num_landscapes):
+    #     plt.plot(L2[0][resolution*(i-1):resolution*i])
+    # plt.savefig('landscape_d=2'+genotype+'.pdf')
+    # plt.close()
+    alpha_PH12=np.array(alpha_PH12)
+    alpha_PH12_all=np.array(alpha_PH12_all)
+    print(alpha_PH12.shape)
+    print(alpha_PH12_all.shape)
+    return alpha_PH12,alpha_PH12_all
+def PH_mute0(pro):
+    """""
+        PH0 features for `pro` at mutational sites
+
+        Parameters
+        ----------
+        pro: pro_complex
+
+        Returns
+        -------
+        0-d PH features:
+            mute0_dth: list, dimension: number of mutational sites
+            mute0_bar: list, dimension: number of mutational sites
+        """
+    mute0_dth = []
+    mute0_bar= []
+    # mute12_a = []
+    # mute12_all= []
+
+    for muteChain in pro.muteList:
+        for i in range(len(pro.muteList[muteChain])):
+            tmp1,tmp2 = rips_complex(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i])
+            # tmp3,tmp4 = alpha_shape(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i])
+            mute0_dth.append(np.asarray(tmp1))
+            mute0_bar.append(np.asarray(tmp2))
+            # mute12_a.append(np.asarray(tmp3))
+            # mute12_all.append(np.asarray(tmp4))
+    mute0_dth = np.asarray(mute0_dth)
+    mute0_bar = np.asarray(mute0_bar)
+    # mute12_a = np.asarray(mute12_a)
+    # mute12_all = np.asarray(mute12_all)
+    return mute0_dth,mute0_bar #,mute12_a,mute12_all
+
+def PH_mute12(pro):
+    """""
+        PH12 features for `pro` at mutational sites
+
+        Parameters
+        ----------
+        pro: pro_complex
+
+        Returns
+        -------
+        1-d and 2-d PH features:
+            mute12_a: list, dimension: number of mutational sites
+            mute12_all: list, dimension: number of mutational sites
+        """
+    # mute0_dth = []
+    # mute0_bar= []
+    mute12_a = []
+    mute12_all= []
+
+    for muteChain in pro.muteList:
+        for i in range(len(pro.muteList[muteChain])):
+            # tmp1,tmp2 = rips_complex(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i])
+            tmp3,tmp4 = alpha_shape(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i])
+            # mute0_dth.append(np.asarray(tmp1))
+            # mute0_bar.append(np.asarray(tmp2))
+            mute12_a.append(np.asarray(tmp3))
+            mute12_all.append(np.asarray(tmp4))
+    # mute0_dth = np.asarray(mute0_dth)
+    # mute0_bar = np.asarray(mute0_bar)
+    mute12_a = np.asarray(mute12_a)
+    mute12_all = np.asarray(mute12_all)
+    # return mute0_dth,mute0_bar,mute12_a,mute12_all
+    return mute12_a,mute12_all
+
+def PH_mute_landscape(pro):
     """""
         PH features for `pro` at mutational sites
 
@@ -338,7 +491,7 @@ def PH_mute(pro):
         0-d PH features:
             mute0_dth: list, dimension: number of mutational sites
             mute0_bar: list, dimension: number of mutational sites
-        1-d and 2-d PH features:
+        1-d and 2-d PH features using persistence landscape
             mute12_a: list, dimension: number of mutational sites
             mute12_all: list, dimension: number of mutational sites
         """
@@ -348,24 +501,24 @@ def PH_mute(pro):
     # mute0_bar={}
     # mute12_a={}
     # mute12_all={}
-    mute0_dth = []
-    mute0_bar= []
+    # mute0_dth = []
+    # mute0_bar= []
     mute12_a = []
     mute12_all= []
 
     for muteChain in pro.muteList:
         for i in range(len(pro.muteList[muteChain])):
-            tmp1,tmp2 = rips_complex(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i])
-            tmp3,tmp4 = alpha_shape(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i])
-            mute0_dth.append(np.asarray(tmp1))
-            mute0_bar.append(np.asarray(tmp2))
+            # tmp1,tmp2 = rips_complex(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i])
+            tmp3,tmp4 = alpha_shape_landscape(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i],pro.genotype)
+            # mute0_dth.append(np.asarray(tmp1))
+            # mute0_bar.append(np.asarray(tmp2))
             mute12_a.append(np.asarray(tmp3))
             mute12_all.append(np.asarray(tmp4))
-    mute0_dth = np.asarray(mute0_dth)
-    mute0_bar = np.asarray(mute0_bar)
+    # mute0_dth = np.asarray(mute0_dth)
+    # mute0_bar = np.asarray(mute0_bar)
     mute12_a = np.asarray(mute12_a)
     mute12_all = np.asarray(mute12_all)
-    return mute0_dth,mute0_bar,mute12_a,mute12_all
+    return mute12_a,mute12_all
 
 #### PST features
 
@@ -446,7 +599,7 @@ def PST_L0(atoms_m,atoms_o,interval = 1., birth_cut = 2., death_cut = 11.):
     return np.asarray(betti0),np.asarray(nonzero)
 def PST_mute(pro):
     """""
-        PST features for `pro` at mutational sites
+        PST L0 features for `pro` at mutational sites
 
         Parameters
         ----------
@@ -465,8 +618,157 @@ def PST_mute(pro):
     mute0_betti0=np.asarray(mute0_betti0)
     mute0_nonzero=np.asarray(mute0_nonzero)
     return mute0_betti0,mute0_nonzero
+def PST_L1L2_mute(pro,persistence=0,num=100000000,interval = 1., birth_cut = 2., death_cut = 11.):
+    """""
+        PST features for `pro` at mutational sites
+
+        Parameters
+        ----------
+        pro: pro_complex
+
+        persistence: persistence parameter
+
+        num: number of eigenvalues to be evaluated. default make it very large to contain all eigenvalues
+        Returns
+        -------
+        1-d and 2-d non-harmonic spectra:
+            mute12_a: list, dimension: number of mutational sites
+            mute12_all: list, dimension: number of mutational sites
+        """
+    from filepath_dir import software_path
+    path = software_path()
+    HERMES_path = path['HERMES_path']
+    os.system('cp ' + HERMES_path + 'Snapshot .')
+
+    BinIdx = int((death_cut - birth_cut) / interval)
+    Bins = np.linspace(birth_cut, death_cut, BinIdx + 1)
+    filtration_txt='filtration.txt'
+    file = open(filtration_txt, 'w')
+    for p in Bins:
+        file.write(str(p**2)+' ')
+    file.write('\n')
+    file.close()
+    alpha_PST12_betti=[]
+    alpha_PST12_nonzero=[]
+    for muteChain in pro.muteList:
+        for i in range(len(pro.muteList[muteChain])):
+            tmp1,tmp2=PST_L1L2_spectra(pro.atoms_m_m[muteChain][i],pro.atoms_m_o[muteChain][i],
+                             filtration_txt, persistence, num)
+            alpha_PST12_betti.append(tmp1)
+            alpha_PST12_nonzero.append(tmp2)
+    os.system('rm Snapshot')
+    os.system('rm *.vtk')
+    os.system('rm filtration.txt')
+    os.system('rm sorted_alpha.txt')
+    os.system('rm points.xyz')
+    alpha_PST12_betti=np.asarray(alpha_PST12_betti)
+    alpha_PST12_nonzero=np.asarray(alpha_PST12_nonzero)
+    return alpha_PST12_betti,alpha_PST12_nonzero
+def PST_L1L2_spectra(atoms_m, atoms_o,filtration_txt,persistence,num):
+    """""
+        Non-harmonic spectra for L1 and L2, generated by HERMES.
+        Euclidean distance is used by concatenate all atoms.
+
+        Parameters
+        ----------
+        atoms_m: list
+            each element stores a list of `atom` with the same element type (given in @ElementList)
+        atoms_o: list
+            each element stores a list of `atom` with the same element type (given in @ElementList)
+        Returns
+        -------
+
+        """
+
+    alpha_PST12_nonzero=[]#np.zeros([EleLength, EleLength, len(Bins),10])
+    alpha_PST12_betti=[]
+    for idx_m, e_m in enumerate(ElementList):
+        for idx_o, e_o in enumerate(ElementList):
+            points  = [iatom.pos for iatom in atoms_m[idx_m]]
+            points += [iatom.pos for iatom in atoms_o[idx_o]]
+            L0,L1,L2=run_hermes(points,filtration_txt,num,persistence)
+            a,b=stat_eigen(L1)
+            alpha_PST12_betti.extend(a)
+            alpha_PST12_nonzero.extend(b)
+            a,b=stat_eigen(L2)
+            alpha_PST12_betti.extend(a)
+            alpha_PST12_nonzero.extend(b)
+    # alpha_PST12_all_nonzero=[]
+    # alpha_PST12_all_betti=[]
+
+    points = []
+    for idx in range(EleLength):
+        points += [iatom.pos for iatom in atoms_m[idx]]
+        points += [iatom.pos for iatom in atoms_o[idx]]
+    L0, L1, L2 = run_hermes(points, filtration_txt, num, persistence)
+    a, b = stat_eigen(L1)
+    alpha_PST12_betti.extend(a)
+    alpha_PST12_nonzero.extend(b)
+    a, b = stat_eigen(L2)
+    alpha_PST12_betti.extend(a)
+    alpha_PST12_nonzero.extend(b)
+        # xyz_file=genereate_xyz(points)
+        # os.system('./Snapshot ' + xyz_file + ' ' + filtration_txt + ' ' + str(num) + ' ' + str(persistence))
+    # print(alpha_PST12)
+    # print(alpha_PST12_all)
+    # print(len(alpha_PST12))
+    # print(len(alpha_PST12_all))
+    # hhh
+    alpha_PST12_betti = np.array(alpha_PST12_betti)
+    alpha_PST12_nonzero = np.array(alpha_PST12_nonzero)
 
 
+    return alpha_PST12_betti,alpha_PST12_nonzero
+
+
+def read_spectra(filename):
+    L = []
+    tmp = open(filename, 'r').readlines()
+    for spectra in tmp:
+        if len(spectra.replace('\n', '')) == 0:
+            L.append(np.array([]))
+        else:
+            spectra = spectra.replace('\n', '').split()
+            spectra = np.array([float(a) for a in spectra])
+            spectra[spectra < 10 ** -10] = 0.
+            L.append(spectra)
+    return L
+def run_hermes(points,filtration_txt,num,persistence):
+    """""
+    generate a .xyz files for point cloud
+    
+    """""
+    xyz_file='points.xyz'
+    file = open(xyz_file, 'w')
+    for pts in points:
+        file.write(str(pts[0])+'   '+str(pts[1])+'   '+str(pts[2])+'\n')
+    file.close()
+    os.system('./Snapshot ' + xyz_file + ' ' + filtration_txt + ' ' + str(num) + ' ' + str(persistence))
+    L0=read_spectra('snapshots_vertex.txt')
+    L1=read_spectra('snapshots_edge.txt')
+    L2=read_spectra('snapshots_facet.txt')
+    os.system('rm snapshots_vertex.txt')
+    os.system('rm snapshots_edge.txt')
+    os.system('rm snapshots_facet.txt')
+
+    return L0,L1,L2
+
+    # return xyz_file
+def stat_eigen(L):
+    # only look at non-harmonic eigenvalues
+    nonzero=[]
+    betti=[]
+    for l in L:
+        betti.append((l==0.0).sum())
+        l=l[l>0.]
+        if len(l) > 0:
+            lll = [np.min(l), np.max(l), np.mean(l), np.std(l), np.sum(l)]
+            nonzero.extend(lll)
+        else:
+            lll = [0., 0., 0., 0., 0.]
+            nonzero.extend(lll)
+    nonzero=np.array(nonzero)
+    return betti, nonzero
 ####   construct features
 
 
@@ -498,6 +800,11 @@ def merge_features_site(*args,site_method,max_mut=1):
     return Features
 
 def construct_features_MT_WT(f_MT,f_WT):
-    Feature = np.concatenate((f_MT.flatten(),f_WT.flatten()))
-    Feature = np.concatenate((Feature.flatten(),f_MT.flatten()-f_WT.flatten()))
-    return Feature
+    if f_MT is not None:
+        # print(f_MT)
+        # print(f_WT)
+        Feature = np.concatenate((f_MT.flatten(),f_WT.flatten()))
+        Feature = np.concatenate((Feature.flatten(),f_MT.flatten()-f_WT.flatten()))
+        return Feature
+    else:
+        return None
