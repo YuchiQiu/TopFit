@@ -199,6 +199,7 @@ STUCTURE_RESOLUTION={
 def software_path():
     vmd_path = '/mnt/ufs18/home-015/qiuyuchi/software/vmd-1.9.4a54/bin/'
     jackal_path = '/mnt/ufs18/home-015/qiuyuchi/software/jackal/'
+    HERMES_path='/mnt/ufs18/home-015/qiuyuchi/software/HERMES/build/'
 
-    path={'vmd_path':vmd_path,'jackal_path':jackal_path}
+    path={'vmd_path':vmd_path,'jackal_path':jackal_path,'HERMES_path':HERMES_path}
     return path
