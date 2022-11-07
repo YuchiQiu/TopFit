@@ -149,6 +149,8 @@ def evaluate_predictor(dataset_name, encoder_name, reg_para,n_structure,
                 preds=np.asarray(preds)
                 # preds=np.mean(preds,axis=0)
                 test['pred'] = np.mean(preds, axis=0)
+                # regressor_dic['n_structures']=n_structure
+
     if structure_id is None:
         # the csv results are usually saved unless:
         # running NMR ensemble model for only one specific strucutre given by `structure_id`
@@ -160,6 +162,8 @@ def evaluate_predictor(dataset_name, encoder_name, reg_para,n_structure,
         np.savez(outpath_npz,dataset_name=dataset_name,encoder_name=encoder_name,n_train=n_train,
                  seed=seed,data=data,data_key=data.keys(),test=test,test_key=test.keys(),max_n_mut=max_n_mut,regressor_dic=regressor_dic,outpath=outpath,
                  n_structure=n_structure,structure_id=structure_id,results_suffix=results_suffix)
+
+
 
 def summary_csv(dataset_name,encoder_name,n_train,seed,data,test,max_n_mut,regressor_dic,outpath):
     # save summary results for all metrics
@@ -207,6 +211,8 @@ def main():
             'in the `seq` and `log_fitness` columns.')
     parser.add_argument('encoder_name', type=str,
             help='Encoder name, or all for running all encoders.')
+    # parser.add_argument('--regressor', type=str,
+    #         help='perform single regressor if specified; Option: Ridge',default='')
     parser.add_argument('--n_structure', type=int,
             help='Only for running NMR ensemble model.'
                  'number of structures to be considered. '
@@ -222,8 +228,15 @@ def main():
     parser.add_argument('--reg_para', type=str,
                         help='csv documents for hyperopt information',
                         default='Inputs/RegressorPara.csv')
+    # parser.add_argument('--n_threads', type=int, default=20)
     parser.add_argument('--n_train', type=int, default=96)
     parser.add_argument('--max_n_mut', type=int, default=5)
+    # parser.add_argument('--joint_training', dest='joint_training', action='store_true')
+    # parser.add_argument('--boosting', dest='joint_training', action='store_false')
+    # parser.set_defaults(joint_training=True)
+    # parser.add_argument('--train_on_single', dest='train_on_single', action='store_true')
+    # parser.add_argument('--train_on_all', dest='train_on_single', action='store_false')
+    # parser.set_defaults(train_on_single=True)
     parser.add_argument('--train_n_mut',type=int,default=0,help='training data selection, number of muation is inlcuded.'
                                                                 ' Default is 0 which includes all number of mutations')
     parser.add_argument('--ignore_gaps', dest='ignore_gaps', action='store_true')
