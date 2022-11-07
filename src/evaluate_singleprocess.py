@@ -32,6 +32,14 @@ def evaluate_predictor(dataset_name, encoder_name, reg_para,n_structure,
     else:
         outpath_npz=os.path.join(outdir, 'results'+results_suffix+'_'
                                  +encoder_name+'_n'+str(n_train)+'_seed'+str(seed)+'_strc'+str(structure_id)+'.npz')
+
+    if save_pred:
+        try:
+            tmp = np.load(outpath_npz,allow_pickle=True)
+            tmp=tmp['test']
+            return 0
+        except:
+            os.system('rm '+outpath_npz)
     print(f'----- encoder {encoder_name}, seed {seed} -----')
     outpath = f'{outpath}-{os.getpid()}'  # each process writes to its own file
     data = load_data_split(dataset_name, split_id=-1,
@@ -80,10 +88,6 @@ def evaluate_predictor(dataset_name, encoder_name, reg_para,n_structure,
             else:
                 X_train=(X1_train,X2_train)
                 X_test=(X1_test,X2_test)
-            # if regressor=='Ridge':
-            #     preds,top_models_name,top_models_params,training_loss_cv,testing_loss_cv=\
-            #         RidgeRegressor(X_train,Y_train,X_test)
-            # else:
             preds,top_models_name,top_models_params,training_loss_cv,testing_loss_cv=\
                 EnsembleRegressors(X_train,Y_train,X_test,reg_para,hyperopt = hyperopt,
                        n_to_average = n_to_average)
@@ -107,10 +111,6 @@ def evaluate_predictor(dataset_name, encoder_name, reg_para,n_structure,
             else:
                 X_train = (X1_train, X2_train)
                 X_test = (X1_test, X2_test)
-            # if regressor=='Ridge':
-            #     preds,top_models_name,top_models_params,training_loss_cv,testing_loss_cv=\
-            #         RidgeRegressor(X_train,Y_train,X_test)
-            # else:
 
             if structure_id is None:
                 # run regressor on all structures if structure_id is None
@@ -137,14 +137,18 @@ def evaluate_predictor(dataset_name, encoder_name, reg_para,n_structure,
                 x_train = single_structure_tuple(X_train, structure_id)
                 x_test = single_structure_tuple(X_test, structure_id)
 
-                preds, _, _, _, _ = \
+                preds,top_models_name,top_models_params,training_loss_cv,testing_loss_cv = \
                     EnsembleRegressors(x_train, Y_train, x_test,
                                        reg_para, hyperopt=hyperopt,
                                        n_to_average=n_to_average)
+                for i, model in enumerate(top_models_name):
+                    regressor_dic['top' + str(i)] = model
+                    regressor_dic['top' + str(i) + ' rmse (train cv)'] = training_loss_cv[i]
+                    regressor_dic['top' + str(i) + ' rmse (test cv)'] = testing_loss_cv[i]
+                    regressor_dic['top' + str(i) + ' para'] = dict2str(top_models_params[i])
                 preds=np.asarray(preds)
                 # preds=np.mean(preds,axis=0)
                 test['pred'] = np.mean(preds, axis=0)
-                # regressor_dic['n_structures']=n_structure
     if structure_id is None:
         # the csv results are usually saved unless:
         # running NMR ensemble model for only one specific strucutre given by `structure_id`
@@ -157,22 +161,12 @@ def evaluate_predictor(dataset_name, encoder_name, reg_para,n_structure,
                  seed=seed,data=data,data_key=data.keys(),test=test,test_key=test.keys(),max_n_mut=max_n_mut,regressor_dic=regressor_dic,outpath=outpath,
                  n_structure=n_structure,structure_id=structure_id,results_suffix=results_suffix)
 
-    # return results
 def summary_csv(dataset_name,encoder_name,n_train,seed,data,test,max_n_mut,regressor_dic,outpath):
     # save summary results for all metrics
     metric_fns = {
         'spearman': spearman,
         'ndcg': ndcg,
         'rmse': rmse,
-        # 'topk_mean': functools.partial(
-        #     topk_mean, topk=metric_topk),
-        # 'hit_rate_wt': functools.partial(
-        #    hit_rate, y_ref=get_wt_log_fitness(dataset_name),
-        #    topk=metric_topk),
-        # 'hit_rate_bt': functools.partial(
-        #    hit_rate, y_ref=train.log_fitness.max(), topk=metric_topk),
-        # 'aucroc': functools.partial(
-        #    aucroc, y_cutoff=get_log_fitness_cutoff(dataset_name)),
     }
     results_dict = {
         'dataset': dataset_name,
@@ -201,16 +195,7 @@ def summary_csv(dataset_name,encoder_name,n_train,seed,data,test,max_n_mut,regre
         results.to_csv(outpath, mode='w', index=False,
                        columns=sorted(results.columns.values))
 
-# def run_from_queue(worker_id, queue):
-#     while True:
-#         args = queue.get()
-#         try:
-#             evaluate_predictor(*args)
-#         except Exception as e:
-#             logging.error("ERROR: %s", str(e))
-#             logging.exception(e)
-#             queue.task_done()
-#         queue.task_done()
+
 def main():
     parser = argparse.ArgumentParser(
             description='Example: python evaluate.py sarkisyan onehot_ridge '
@@ -222,8 +207,6 @@ def main():
             'in the `seq` and `log_fitness` columns.')
     parser.add_argument('encoder_name', type=str,
             help='Encoder name, or all for running all encoders.')
-    # parser.add_argument('--regressor', type=str,
-    #         help='perform single regressor if specified; Option: Ridge',default='')
     parser.add_argument('--n_structure', type=int,
             help='Only for running NMR ensemble model.'
                  'number of structures to be considered. '
@@ -239,15 +222,8 @@ def main():
     parser.add_argument('--reg_para', type=str,
                         help='csv documents for hyperopt information',
                         default='Inputs/RegressorPara.csv')
-    # parser.add_argument('--n_threads', type=int, default=20)
     parser.add_argument('--n_train', type=int, default=96)
     parser.add_argument('--max_n_mut', type=int, default=5)
-    # parser.add_argument('--joint_training', dest='joint_training', action='store_true')
-    # parser.add_argument('--boosting', dest='joint_training', action='store_false')
-    # parser.set_defaults(joint_training=True)
-    # parser.add_argument('--train_on_single', dest='train_on_single', action='store_true')
-    # parser.add_argument('--train_on_all', dest='train_on_single', action='store_false')
-    # parser.set_defaults(train_on_single=True)
     parser.add_argument('--train_n_mut',type=int,default=0,help='training data selection, number of muation is inlcuded.'
                                                                 ' Default is 0 which includes all number of mutations')
     parser.add_argument('--ignore_gaps', dest='ignore_gaps', action='store_true')
@@ -268,6 +244,8 @@ def main():
                              "it with double quotes: "
                              'foo="this is a sentence". Note that '
                              "values are always treated as floats.")
+    parser.add_argument('--outdir', type=str, default='results')
+
     parser.add_argument('--results_suffix', type=str, default='')
     parser.add_argument('--save_pred',help='save predictions to npz. Need to be True is structure_id is not given by default', dest='save_pred', action='store_true')
     parser.set_defaults(save_pred=False)
@@ -278,10 +256,10 @@ def main():
         encoder_params['ignore_gaps'] = args.ignore_gaps
     print(args)
 
-    outdir = os.path.join('results', args.dataset_name)
+    outdir = os.path.join(args.outdir, args.dataset_name)
     if not os.path.exists(outdir):
         # os.mkdir(outdir)
-        os.system('mkdir -p '+'results/'+ args.dataset_name)
+        os.system('mkdir -p '+outdir)
     outpath = os.path.join(outdir, f'results{args.results_suffix}.csv')
 
 
