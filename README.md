@@ -36,7 +36,7 @@ The above pacakges are required by modules including PST, TAPE, ESM, and ensembl
 
 In additional to packages listed above, modules below need extra softwares or packages:
 ### PST module
-PST module requires [VMD](https://www.ks.uiuc.edu/Research/vmd/) and [Jackal](http://honig.c2b2.columbia.edu/jackal) for structure data processing. Please install them and add the paths of their excutable files in `software_path()` function in `src/filepath_dir.py`.
+PST module requires [VMD](https://www.ks.uiuc.edu/Research/vmd/) and [Jackal](http://honig.c2b2.columbia.edu/jackal) for structure data processing. Please install them and add the paths of their excutable files in `software_path()` function in `src/filepath_dir.py`. The high-dimensional Laplacians are not used in our default setting, but it is available. Please install [HERMES] (https://github.com/wangru25/HERMES) and update the path of its excutable file in `software_path()` to allow calculation of high-dimensional Laplacians.
 ### TAPE module
 Follow the instruction to install [TAPE](https://github.com/songlab-cal/tape-neurips2019),and download pretrain weights. tensorflow=1.13.0 also needs to be installed. Please revise the path of its pretrain parameters in `TAPE_MODEL_LOCATIONS` in `src/filepath_dir.py`, its default value is `tape-neurips2019/pretrained_models/`.
 ### ESM module
@@ -65,6 +65,8 @@ dataset=YAP1_HUMAN_Fields2012-singles-linear
 python src/merge_PST.py $dataset
 ``` 
 to collect feature matrix for the dataset in dimension $N\times L$, where $N$ is the number of entries in the dataset and $L$ is the feature dimension. The feature matrix is stored in `Features/$dataset/unnorm/`, and the standardized features using `StandardScaler()` in [scikit-learn](https://scikit-learn.org/stable/) is stored in `Features/$dataset/norm/`. The regression model uses standardized features in default. `PST.npy` and `PH.npy` are for persistent spectral theory and persistent homology features, respectively. 
+
+`--feature_list` has more options for L1, L2 features. The default option calculates the necessary features for our PST and PH features in main text.
 
 ## Sequence-based embedding and evolutionary scores
 
