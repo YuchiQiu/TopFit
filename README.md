@@ -1,5 +1,6 @@
 # TopFit: Topology-offered protein fitness
 **This is the source code of paper: _"Persistent spectral theory-guided protein engineering" by Yuchi Qiu, and Guo-Wei Wei._ Nature Computational Science.**
+[![DOI](https://zenodo.org/badge/510176637.svg)](https://zenodo.org/badge/latestdoi/510176637)
 
 TopFit is a persistent spectral theory (PST)-based machine learning model that navigates protein fitness landscape. It integrates with sequence-based features and it is equipped with an ensemble regression. The PST-based features capture the mutation-induced local 3D structure changes. Whereas sequence-based models can deal with more general cases without resorting to 3D structures. The ensemble regression integrates various regression models automatically optimized by Bayesian optimization to have strong generalization for various sizes of training data.
 
