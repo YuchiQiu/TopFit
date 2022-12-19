@@ -194,7 +194,7 @@ Run `./download_data_demo.sh` to download input and output data for `YAP1_HUMAN`
 All source data are available in this [link](https://weilab.math.msu.edu/Downloads/TopFit/). `Data.tar.gz` contains sequence data, structure data, evolutionary scores, and alignment files for all datasets. `Features.tar.gz` contains normalized embedding features for all datasets. `unirep_weights.tar.gz` contains pretrain and fine-tune weights for eUniRep model.
 
 # Reference
-[1] Persistent spectral theory-guided protein engineering via TopFit", by Yuchi Qiu and Guo-Wei Wei, Nature Computational Science.\
+[1] Persistent spectral theory-guided protein engineering", by Yuchi Qiu and Guo-Wei Wei, Nature Computational Science.\
 [2] [Learning protein fitness models from evolutionary and assay-labelled data, Nature Biotechnology 2022](https://doi.org/10.1038/s41587-021-01146-5) (Model integrates multiple sequence-based features)\
 [3] [Informed training set design enables efficient machine learning-assisted directed protein evolution, Cell Systems 2021](https://doi.org/10.1016/j.cels.2021.07.008) (A work uses ensemble regression)\
 [4] [Deep generative models of genetic variation capture the effects of mutations, Nature Methods, 2018](https://doi.org/10.1038/s41592-018-0138-4) (DeepSequence VAE)\
